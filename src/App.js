@@ -1,6 +1,6 @@
 import React from "react"
 import Main from "./components/main.js"
-import "bootstrap/dist/css/bootstrap.css"
+import "./index"
 
 function App() {
   return <Main />

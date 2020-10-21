@@ -7,9 +7,9 @@ const SEND_USER_INFO = "SEND_USER_INFO"
 
 const initialState = {
   user: {
-    name: "Иванова Анна Михайловна",
-    email: "ivanova@mail.ru",
-    phone: "",
+    name: localStorage.getItem("name") ?? "Иванова Анна Михайловна",
+    email: localStorage.getItem("email") ?? "ivanova@mail.ru",
+    phone: localStorage.getItem("phone") ?? "",
   },
 }
 
@@ -55,7 +55,10 @@ export function sendUserInfo(name, email, phone) {
     axios({
       method: "post",
       url: `http://jsonplaceholder.typicode.com/posts`,
-      headers: "Content-Type: application/json",
+      headers: {
+        "Content-Type": "application/json",
+        "x-token-access": "random",
+      },
       data: { name, email, phone },
     }).then((data) => {
       dispatch({

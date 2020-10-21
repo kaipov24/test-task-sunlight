@@ -20,6 +20,7 @@ const ModalWindow = () => {
   const [name, setName] = useState()
   const [email, setEmail] = useState()
   const [phone, setPhone] = useState()
+  const [valid, setValid] = useState(true)
 
   const setValues = () => {
     setOpen(true)
@@ -28,6 +29,9 @@ const ModalWindow = () => {
     dispatch(updatePhone(phone))
     setToggle(true)
     dispatch(sendUserInfo(name, email, phone))
+    localStorage.setItem('name', name)
+    localStorage.setItem("email", email)
+    localStorage.setItem("phone", phone)
   }
 
   const submitValues = () => {
@@ -123,7 +127,7 @@ const ModalWindow = () => {
               <TextField
                 id="outlined-full-width"
                 label="Фамилия и имя"
-                style={{ width: 280 }}
+                style={valid ? {width: 280 } : {width: 100}}
                 placeholder="Укажите вашу фамилию и имя"
                 margin="normal"
                 InputLabelProps={{

@@ -1,5 +1,7 @@
 # Test task project
 
+Link to app [click)](https://sunlight-test-task.web.app/).
+
 ## Quick start
 
 1. Clone this repo using:

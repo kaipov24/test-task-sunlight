@@ -1,36 +1,27 @@
 import axios from "axios"
 
-const UPDATE_NAME = "UPDATE_NAME"
-const UPDATE_PHONE = "UPDATE_PHONE"
-const UPDATE_EMAIL = "UPDATE_EMAIL"
+const UPDATE_USER = "UPDATE_USER"
 const SEND_USER_INFO = "SEND_USER_INFO"
 
 const initialState = {
-  user: {
-    name: localStorage.getItem("name") ?? "Иванова Анна Михайловна",
-    email: localStorage.getItem("email") ?? "ivanova@mail.ru",
-    phone: localStorage.getItem("phone") ?? "",
+  user: JSON.parse(localStorage.getItem("user")) ?? {
+    name: "Иванова Анна Михайловна",
+    email: "ivanova@mail.ru",
+    phone: "",
   },
 }
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case UPDATE_NAME: {
+    case UPDATE_USER: {
       return {
         ...state,
-        user: { ...state.user, name: action.name },
-      }
-    }
-    case UPDATE_EMAIL: {
-      return {
-        ...state,
-        user: { ...state.user, email: action.email },
-      }
-    }
-    case UPDATE_PHONE: {
-      return {
-        ...state,
-        user: { ...state.user, phone: action.phone },
+        user: {
+          ...state.user,
+          name: action.name,
+          phone: action.phone,
+          email: action.email,
+        },
       }
     }
     default:
@@ -38,20 +29,9 @@ export default (state = initialState, action) => {
   }
 }
 
-export function updateName(name) {
-  return { type: UPDATE_NAME, name }
-}
-
-export function updatePhone(phone) {
-  return { type: UPDATE_PHONE, phone }
-}
-
-export function updateEmail(email) {
-  return { type: UPDATE_EMAIL, email }
-}
-
-export function sendUserInfo(name, email, phone) {
+export function sendUserInfo({ name, email, phone }) {
   return (dispatch) => {
+    dispatch({ type: UPDATE_USER, name, email, phone })
     axios({
       method: "post",
       url: `http://jsonplaceholder.typicode.com/posts`,

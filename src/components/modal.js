@@ -1,4 +1,6 @@
 import React, { useState } from "react"
+import Schema from "validate"
+
 import { useDispatch } from "react-redux"
 import TextField from "@material-ui/core/TextField"
 import Modal from "@material-ui/core/Modal"
@@ -6,12 +8,43 @@ import PermContactCalendarIcon from "@material-ui/icons/PermContactCalendar"
 import AlternateEmailIcon from "@material-ui/icons/AlternateEmail"
 import PhoneIcon from "@material-ui/icons/Phone"
 import CloseIcon from "@material-ui/icons/Close"
-import {
-  updateName,
-  updateEmail,
-  updatePhone,
-  sendUserInfo,
-} from "../redux/reducers/info"
+import { sendUserInfo } from "../redux/reducers/info"
+
+const user = new Schema({
+  name: {
+    type: String,
+    match: /^[A-Za-z.!@?#"$%&:;() *\+,\/;\-=[\\\]\^_{|}<>\u0400-\u04FF]*$/,
+    required: true,
+    length: { min: 3, max: 32 },
+    message: {
+      match: "Вы неверно указали имя",
+      length: "Поле имя должно содержать более 3 символов",
+      required: "Поле имя обязательно",
+    },
+  },
+  email: {
+    type: String,
+    match: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+    required: true,
+    message: {
+      match: "Вы неверно указали E-mail",
+      length: "Вы неверно указали E-mail",
+      required: "Поле E-mail обязательно",
+    },
+    length: { min: 3, max: 32 },
+  },
+  phone: {
+    type: String,
+    match: /^[0-9]+$/,
+    required: true,
+    length: { min: 5, max: 32 },
+    message: {
+      match: "Вы неверно указали номер телефона",
+      length: "Поле номер должно содержать более 5 символов",
+      required: "Поле номер телефона обязательно",
+    },
+  },
+})
 
 const ModalWindow = () => {
   const dispatch = useDispatch()
@@ -20,18 +53,31 @@ const ModalWindow = () => {
   const [name, setName] = useState()
   const [email, setEmail] = useState()
   const [phone, setPhone] = useState()
-  const [valid, setValid] = useState(true)
+  const [errs, setErrs] = useState({})
 
+  const validateAndOpen = () => {
+    const dataObj = { name, email, phone }
+    const errors = user.validate(dataObj)
+    if (errors.length === 0) {
+      setOpen(true)
+      setToggle(true)
+      dispatch(sendUserInfo(dataObj))
+      localStorage.setItem("user", JSON.stringify(dataObj))
+    } else {
+      setErrs(
+        errors.reduce((acc, rec) => {
+          return { ...acc, [rec.path]: rec }
+        }, {})
+      )
+    }
+  }
   const setValues = () => {
+    const dataObj = { name, email, phone }
+
     setOpen(true)
-    dispatch(updateName(name))
-    dispatch(updateEmail(email))
-    dispatch(updatePhone(phone))
     setToggle(true)
-    dispatch(sendUserInfo(name, email, phone))
-    localStorage.setItem('name', name)
-    localStorage.setItem("email", email)
-    localStorage.setItem("phone", phone)
+    dispatch(sendUserInfo(dataObj))
+    localStorage.setItem("user", dataObj)
   }
 
   const submitValues = () => {
@@ -127,9 +173,11 @@ const ModalWindow = () => {
               <TextField
                 id="outlined-full-width"
                 label="Фамилия и имя"
-                style={valid ? {width: 280 } : {width: 100}}
+                style={{ width: 280 }}
                 placeholder="Укажите вашу фамилию и имя"
                 margin="normal"
+                error={!!errs["name"]}
+                helperText={errs["name"]?.message}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -150,6 +198,8 @@ const ModalWindow = () => {
                 style={{ width: 280 }}
                 placeholder="Укажите вашу почту"
                 margin="normal"
+                error={!!errs["email"]}
+                helperText={errs["email"]?.message}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -170,6 +220,8 @@ const ModalWindow = () => {
                 style={{ width: 280 }}
                 placeholder="Укажите номер телефона"
                 margin="normal"
+                error={!!errs["phone"]}
+                helperText={errs["phone"]?.message}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -186,7 +238,7 @@ const ModalWindow = () => {
           <div className="flex items-center h-full">
             <button
               type="button"
-              onClick={() => setOpen(true)}
+              onClick={validateAndOpen}
               className="flex justify-center py-3 w-48  buttonColor rounded-full"
             >
               Сохранить изменения

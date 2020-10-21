@@ -4,7 +4,7 @@ import PersonIcon from "@material-ui/icons/Person"
 import EditIcon from "@material-ui/icons/Edit"
 import Button from "@material-ui/core/Button"
 import CloseIcon from "@material-ui/icons/Close"
-import TopRightInfo from "./top_right_info"
+import User from "./userInfo"
 import Modal from "./modal"
 import Info from "./info"
 
@@ -43,7 +43,7 @@ const Main = () => {
       </div>
       <div className="flex flex-col absolute z-10 p-2 lg:p-4 w-full">
         <div className="flex justify-end h-10 mb-4">
-          <TopRightInfo />
+          <User />
         </div>
         <div className="flex justify-start text-white text-sm font-light lg:tex-md">
           ЛИЧНЫЙ ПРОФИЛЬ <br /> Главная/Личный профиль{" "}

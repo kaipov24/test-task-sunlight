@@ -60,9 +60,7 @@ const ModalWindow = () => {
     const errors = user.validate(dataObj)
     if (errors.length === 0) {
       setOpen(true)
-      setToggle(true)
       dispatch(sendUserInfo(dataObj))
-      localStorage.setItem("user", JSON.stringify(dataObj))
     } else {
       setErrs(
         errors.reduce((acc, rec) => {
@@ -77,7 +75,7 @@ const ModalWindow = () => {
     setOpen(true)
     setToggle(true)
     dispatch(sendUserInfo(dataObj))
-    localStorage.setItem("user", dataObj)
+    localStorage.setItem("user", JSON.stringify(dataObj))
   }
 
   const submitValues = () => {
